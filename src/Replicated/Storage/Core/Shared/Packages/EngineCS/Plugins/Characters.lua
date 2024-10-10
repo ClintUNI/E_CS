@@ -7,7 +7,7 @@ local Systems =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Systems
 local Hooks = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hooks)
 local Input = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Input)
 local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus)
-local Network = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Network)
+
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
 local System = Systems.new("Heartbeat", script.Name, 3)
@@ -21,7 +21,7 @@ local CharacterComponent: Types.ComponentWithType<{
 
 local CharacterComponentQueue = MessageBus.new("CharacterComponent")
 
-local event = Network.new("Networking")
+
 
 --[[ Setup ]]
 
