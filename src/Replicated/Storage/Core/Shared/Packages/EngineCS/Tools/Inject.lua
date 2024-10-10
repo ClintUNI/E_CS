@@ -1,0 +1,2 @@
+--!strict
+--inject a tool's system directly into scheduler so that it gets folded with the rest

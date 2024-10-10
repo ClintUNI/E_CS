@@ -1,0 +1,43 @@
+{
+  "name": "Classes",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "$path": "src/Replicated/Storage"
+    },
+
+    "ReplicatedFirst": {
+      "$path": "src/Replicated/First"
+    },
+
+    "ServerScriptService": {
+      "$path": "src/Server/Scripts"
+    },
+
+    "ServerStorage": {
+      "$path": "src/Server/Storage"
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "$path": "src/Local/Player"
+      },
+      "StarterCharacterScripts": {
+        "$path": "src/Local/Character"
+      }
+    },
+
+    "Workspace": {
+      "$properties": {
+        "FilteringEnabled": true
+      }
+    },
+    
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    }
+  }
+}
