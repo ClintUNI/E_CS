@@ -35,22 +35,19 @@ do
     end
 
     function createCharacterComponentFor(playerEntity: Types.Entity, player: Player)
+        setRespawning(player, true)
         Entities:give(playerEntity, {
             [CharacterComponent] = {
                 ["Character"] = player.Character :: Model,
 
-                ["CharacterAdded"] = player.CharacterAdded:Connect(function(character: Model)
-                    Entities:insert(playerEntity, CharacterComponent, { 
-                        ["Character"] = character 
-                    })
-                    setRespawning(player, false)
-                end),
-
-                ["CharacterRemoving"] = player.CharacterRemoving:Connect(function()
+                ["CharacterRemoving"] = player.CharacterRemoving:Once(function(): ()
                     setRespawning(player, true)
+                    Entities:rid(playerEntity, CharacterComponent)
                 end)
             }
         })
+
+        setRespawning(player, false)
     end
 end
 
@@ -58,7 +55,9 @@ end
 
 Systems:on_update(System, function(world: Types.World)
     for playerEntity: Types.Entity, player: Player in world:query(PlayerComponent):without(CharacterComponent):iter() do
-        createCharacterComponentFor(playerEntity, player)
+        if player.Character then
+            createCharacterComponentFor(playerEntity, player)
+        end
     end
 end)
 

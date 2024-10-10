@@ -1,7 +1,6 @@
 --!strict
 --!optimize 2
 --!native
---!strict
 --draft 4
 
 type i53 = number
