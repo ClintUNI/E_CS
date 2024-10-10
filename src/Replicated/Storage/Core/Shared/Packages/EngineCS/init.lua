@@ -43,9 +43,7 @@ function engine.boot(...: {
     local _ = require(script.Entities)
     local _ = require(script.Components)
     local _ = require(script.Systems)
-    print("prenetwork")
-    local _ = require(script.Tools.Network)
-    print("postnetwork")
+
 
     return function(engineStartParameters: EngineStartParameters)
         local scheduler = require(script.Private.SchedulerV3)

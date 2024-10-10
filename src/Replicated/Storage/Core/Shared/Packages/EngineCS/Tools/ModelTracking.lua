@@ -1,3 +1,4 @@
+--!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
