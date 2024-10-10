@@ -9,13 +9,11 @@ print("pre Warp")
 
 task.spawn(function()
     local Bytenet = Byteblox
-    Bytenet:
+    --Bytenet:
     local Warp = require(ReplicatedStorage.Core.Shared.Packages.Warp)
 
     print("post task spawn")
 end)
-
-local Warp = require(ReplicatedStorage.Core.Shared.Packages.Warp)
 
 print("post warp")
 
