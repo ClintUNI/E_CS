@@ -27,7 +27,9 @@ local settings = {
         Sync = false,
         Network = false,
         Hooks = true,
-        Models = true
+        Models = true,
+
+        Changes = true
     },
 
 } :: Settings

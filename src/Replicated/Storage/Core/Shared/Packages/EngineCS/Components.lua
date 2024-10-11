@@ -12,9 +12,14 @@ local module = {}
 function module.new<T>(name: string): Types.ComponentWithType<T>
     local world: Types.World = Worlds.World
 
-    local component: Types.ComponentWithType<T> = world:component()
-    componentEntitiesByName[name] = component
-    return component
+    local componentExists = module.get(name)
+    if componentExists then
+        return componentExists
+    else
+        local component: Types.ComponentWithType<T> = world:component()
+        componentEntitiesByName[name] = component
+        return component
+    end
 end
 
 function module.get<T>(name: string): Types.ComponentWithType<T>

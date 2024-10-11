@@ -13,7 +13,7 @@ local System = Systems.new("Heartbeat", script.Name, 2)
 
 local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
 local NetworkComponent: Types.ComponentWithType<boolean> = Components.new("Network")
-local WaitComponent:Types.ComponentWithType<number> = Components.get("Wait") or Components.new("Wait")
+local WaitComponent:Types.ComponentWithType<number> = Components.new("Wait")
 
 --[[ Setup ]]
 

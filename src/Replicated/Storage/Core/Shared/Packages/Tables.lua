@@ -1,3 +1,4 @@
+--!strict
 local Tables = {}
 
 function Tables.CopyTable(Table: {})

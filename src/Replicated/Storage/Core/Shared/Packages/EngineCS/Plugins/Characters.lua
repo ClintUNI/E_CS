@@ -24,7 +24,7 @@ local CharacterComponent: Types.ComponentWithType<Model> = Components.get("Model
 Systems:on_update(System, function(world: Types.World)
     for playerEntity: Types.Entity, player: Player in world:query(PlayerComponent):without(CharacterComponent):iter() do
         if player.Character then
-            ModelTracking:subscribe(playerEntity, player)
+            ModelTracking:subscribe(playerEntity, player.Character)
         end
     end
 end)

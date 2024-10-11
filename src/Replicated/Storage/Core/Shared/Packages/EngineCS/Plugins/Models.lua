@@ -20,6 +20,7 @@ Systems:on_update(system, function(world: Types.World): ()
     for _, modelData: { Model: Instance, Entity: Types.Entity } in MessageBus.read(ModelDestroyingQueue) do
         Entities:rid(modelData.Entity, ModelComponent);
     end
+    MessageBus.consume(ModelDestroyingQueue)
     for _, modelData: { Model: Instance, Entity: Types.Entity } in MessageBus.read(ModelTrackingQueue) do
         Entities:give(modelData.Entity, {[ModelComponent] = modelData.Model})
         Outlets:plug(modelData.Model.Destroying,
@@ -28,6 +29,7 @@ Systems:on_update(system, function(world: Types.World): ()
             end
         )
     end
+    MessageBus.consume(ModelTrackingQueue)
 end)
 
 

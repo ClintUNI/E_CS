@@ -8,7 +8,7 @@ local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
 local system = Systems.new("Heartbeat", script.Name, 1)
 
-local WaitComponent:Types.ComponentWithType<number> = Components.get("Wait") or Components.new("Wait")
+local WaitComponent:Types.ComponentWithType<number> = Components.new("Wait")
 
 local os: typeof(os) = os
 
