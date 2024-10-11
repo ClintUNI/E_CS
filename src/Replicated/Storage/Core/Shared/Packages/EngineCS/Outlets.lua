@@ -9,12 +9,16 @@ local connections: { RBXScriptSignal: RBXScriptConnection }  = {} :: { RBXScript
 --[[
     Cannot be individually disconnected, look into Signals for that.
 ]]
-function module:plug<T>(event: RBXScriptSignal, callback: (T) -> ())
+function module:plug<T>(event: RBXScriptSignal, callback: (T) -> (), trackEventSource: Instance?)
     if not cache[event] then
         cache[event] = {}
     end
 
     table.insert(cache[event], callback)
+
+    if trackEventSource then
+        trackEventSource.Destroying:Once(function(): () cache[event] = {}; end)
+    end
 end
 
 function module:start(): { RBXScriptSignal: RBXScriptConnection }

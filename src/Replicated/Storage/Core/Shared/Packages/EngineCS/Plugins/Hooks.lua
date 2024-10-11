@@ -6,8 +6,6 @@ local Entities = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entitie
 local Systems = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Systems)
 local Hooks = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hooks)
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
-local Worlds = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Worlds)
-local World = Worlds.World
 
 local System = Systems.new("Heartbeat", script.Name, 1)
 
