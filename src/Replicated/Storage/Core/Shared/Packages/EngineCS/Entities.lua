@@ -35,8 +35,8 @@ function module.new(typeName: string): Types.Entity
         entitiesByTypeName[typeName] = { entity } 
     end
 
-    if Settings.Plugins.Hooks == true then
-        MessageBus.queue(EntityChangesQueue, { Entity = entity, Component = module.NULL, Value = "CREATE" })
+    if Settings.Plugins.Changes == true  then --normally true, but this should be networked instead
+        MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = "CREATE" })
     end
 
     return entity
@@ -57,10 +57,10 @@ function module:give(entity: Types.Entity, components: { [Types.Component]: any 
 
     for component: Types.Component, value: any in components do
         give(world, entity, component, if value == module.NULL then nil else value)
+    end
 
-        if shouldQueueMessage then
-            MessageBus.queue(EntityChangesQueue, { Entity = entity, Component = component, Value = value })
-        end
+    if shouldQueueMessage then
+        MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = components })
     end
 
     if duration then
@@ -87,7 +87,7 @@ function module:insert<ComponentType>(entity: Types.Entity, componentWithTableVa
         --TODO add middleware
 
         if module:has(entity, SyncComponent) then
-            MessageBus.queue(EntityChangesQueue, { Entity = entity, Component = componentWithTableValue, Value = values })
+            MessageBus.queue(EntityChangesQueue, { Entity = entity, Component = data })
         end
     end
 end
@@ -99,7 +99,7 @@ function module:rid(entity: Types.Entity, ...: Types.Component)
         componentsAsNull[component] = module.NULL
 
         if module:has(entity, SyncComponent) then
-            MessageBus.queue(EntityChangesQueue, { Entity = entity, Component = component, Value = "DELETE" })
+            MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = "DELETE" })
         end
     end
 

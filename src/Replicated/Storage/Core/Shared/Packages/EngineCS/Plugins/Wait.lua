@@ -21,7 +21,6 @@ Systems:on_update(system, function(world: Types.World)
     deltaTime = currentTime
 
     for entity: Types.Entity, amountToWait: number in world:query(WaitComponent):iter() do
-        print(entity, amountToWait)
         local newTimeToWait: number = amountToWait - deltaTimeDifference
 
         if newTimeToWait <= 0 then

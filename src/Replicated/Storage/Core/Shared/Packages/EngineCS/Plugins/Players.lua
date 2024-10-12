@@ -23,8 +23,6 @@ do
     local function createPlayerEntity(player: Player): ()
         if entityIDsByPlayer[player] then return end
 
-        print(player)
-
         local playerEntity: Types.Entity = Entities.new("Player")
         Entities:give(playerEntity, {
             [PlayerComponent] = player,
@@ -42,6 +40,7 @@ do
 
     local players = game:GetService("Players")
 
+
     for _, player in players:GetPlayers() do createPlayerEntity(player) end
     Outlets:plug(players.PlayerAdded, createPlayerEntity)
     Outlets:plug(players.PlayerRemoving, destroyPlayerEntity)
@@ -50,14 +49,11 @@ end
 --[[ Update ]]
 
 Systems:on_update(System, function(world: Types.World)
-    for entity: Types.Entity, player: Player in world:query(PlayerComponent):without(WaitComponent):iter() do
-        print('sup')
-        print(entity)
-        Entities:give(entity, {
-            [WaitComponent] = 20
-        })
-
-    end
+    -- for entity: Types.Entity, player: Player in world:query(PlayerComponent):without(WaitComponent):iter() do
+    --     Entities:give(entity, {
+    --         [WaitComponent] = 5
+    --     })
+    -- end
 end)
 
 --change to use hooks when players join or leave

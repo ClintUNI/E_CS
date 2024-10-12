@@ -1,6 +1,7 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Settings = require(script.Parent.Settings)
 local JECS = require(ReplicatedStorage.Core.Shared.Packages.JECS)
 
 local module = {}
@@ -20,7 +21,8 @@ export type SystemBase = {
     Update: (JECS.World) -> ()?
 }
 
-function module.new(event: Events, name: string, Priority: number): SystemBase
+function module.new(event: Events, name: string, Priority: number, clientOnly: boolean?): SystemBase
+    assert(not clientOnly or not Settings.Game.IsServer, name .. " can only run on the client.")
     totalSystems += 1
     totalSystemsPerEvent[event] += 1
     return {

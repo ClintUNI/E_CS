@@ -1,7 +1,14 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 type Settings = {
     Game: {
         IsServer: boolean
+    },
+
+    Config: {
+        SpawnCFrame: CFrame,
+        VoidCFrame: CFrame
     },
 
     Plugins: {
@@ -12,12 +19,18 @@ type Settings = {
         Network: boolean?,
         Hooks: boolean?,
         Models: boolean?,
+        Changes: boolean?
     }
 }
 
 local settings = {
     Game = {
         IsServer = game:GetService("RunService"):IsServer(),
+    },
+
+    Config = {
+        SpawnCFrame = CFrame.new(0, 30, 0),
+        VoidCFrame = CFrame.new(math.huge, 0, 0)
     },
 
     Plugins = {
@@ -28,8 +41,10 @@ local settings = {
         Network = false,
         Hooks = true,
         Models = true,
+        Humanoids = true,
+        Health = true,
 
-        Changes = true
+        Changes = false
     },
 
 } :: Settings

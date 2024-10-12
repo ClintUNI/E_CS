@@ -1,6 +1,8 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local runservice = game:GetService("RunService")
 
 local root = script.Parent.Parent
+local Settings = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Settings)
 local Systems = require(root.Systems)
 local Worlds = require(root.Worlds)
 
@@ -64,7 +66,7 @@ end
 function scheduler:start()
     local events = {
         Heartbeat = runservice.Heartbeat,
-        RenderStepped = runservice.RenderStepped
+        RenderStepped = if Settings.Game.IsServer then nil else runservice.RenderStepped
     }
     Worlds.Loop:begin(events)
 

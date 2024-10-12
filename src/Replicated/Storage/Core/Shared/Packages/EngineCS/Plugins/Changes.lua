@@ -14,9 +14,15 @@ local EntityChangesQueue = MessageBus.new("EntityChanges")
 local componentsMap: { [string]: Types.Component } = {}
 
 Systems:on_update(system, function(world: Types.World)
-    for _: number, entityChanges in pairs(MessageBus.read(EntityChangesQueue) or {}) do
+    for _: number, entityChanges in MessageBus.read(EntityChangesQueue) do
         local entity: Types.Entity = entityChanges["Entity"]
         local componentsByNameAndChangedValue = entityChanges["Components"]
+
+        if typeof(componentsByNameAndChangedValue) == "string" then
+            if componentsByNameAndChangedValue == "CREATE" then
+                
+            end
+        end
         
         local components = {}
         for component: string, changedValues: any in componentsByNameAndChangedValue do

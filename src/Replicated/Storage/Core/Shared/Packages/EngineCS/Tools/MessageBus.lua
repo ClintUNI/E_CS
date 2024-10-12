@@ -10,7 +10,6 @@ function bus.new(name: string)
     else
         table.insert(busData, {})
         busNamesAndTheirIndex[name] = #busData
-        busData[#busData] = {}
 
         return #busData
     end
