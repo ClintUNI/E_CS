@@ -1,4 +1,3 @@
---!strict
 --[[
 	Sourced from Code Samples:
 	https://create.roblox.com/docs/samples
