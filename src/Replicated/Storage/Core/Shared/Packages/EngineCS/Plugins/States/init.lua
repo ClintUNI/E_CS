@@ -1,9 +1,11 @@
 --!strict
 --!strict
 --!strict
+--!strict
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local StateComponents = require(script.StateComponents)
 local Components = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Components)
 local Entities =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entities)
 local Outlets = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Outlets)
@@ -16,34 +18,28 @@ local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.To
 
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
-local System = Systems.new("Heartbeat", script.Name, 5)
+local System = Systems.new("Heartbeat", script.Name, 6)
 
 local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
-local HealthComponent: Types.ComponentWithType<number> = Components.new("Health")
-local HumanoidComponent: Types.ComponentWithType<Humanoid> = Components.new("Humanoid")
-local WaitComponent: Types.ComponentWithType<Humanoid> = Components.new("Wait")
+local StateComponent: Types.ComponentWithType<number> = Components.new("State")
+local ActionComponent = Components.new("Action")
+local EmotionComponent = Components.new("Emotion")
+local StatusEffectsComponent = Components.new("StatusEffects")
+
 
 --[[ Update ]]
 
 Systems:on_update(System, function(world: Types.World): ()
-    for playerEntity: Types.Entity, humanoid: Humanoid in world:query(HumanoidComponent):without(HealthComponent):iter() do
+    for playerEntity: Types.Entity, player: Player in world:query(PlayerComponent):without(StateComponent):iter() do
         print("hia humanoid without health")
 
-        Entities:give(playerEntity, {[HealthComponent] = 100})
+        Entities:give(playerEntity, {
+            [ActionComponent] = StateComponents.Actions.Idle,
+            [EmotionComponent] = StateComponents.Emotions.Bored,
+            [StatusEffectsComponent] = StateComponents.StatusEffects.Normal
+        })
     end
 
-    for playerEntity: Types.Entity, healthAmount: number, humanoid: Humanoid in world:query(HealthComponent, HumanoidComponent):iter() do
-        if humanoid.Health ~= healthAmount then
-            humanoid.Health = healthAmount
-        end
-    end
-
-    -- for playerEntity: Types.Entity, healthAmount: number in world:query(HealthComponent):without(WaitComponent):iter() do
-    --     print("hia with health, bye bye some health")
-
-    --     Entities:give(playerEntity, {[HealthComponent] = healthAmount - 10})
-    --     Wait.entity(playerEntity, "DamageHealth", 11)
-    -- end
 end)
 
 return System

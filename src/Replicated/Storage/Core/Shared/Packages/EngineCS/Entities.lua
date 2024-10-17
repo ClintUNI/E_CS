@@ -4,11 +4,11 @@ local collection = game:GetService("CollectionService")
 
 local Types = require(script.Parent.Types)
 local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus) :: Types.MessageBus
+local JECS = require(ReplicatedStorage.Core.Shared.Packages.JECS)
 local Components = require(script.Parent.Components)
 local Settings = require(script.Parent.Settings)
 
 local Worlds = require(script.Parent.Worlds)
-local State = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hooks)
 
 local ENTITY_TAG = "__ENTITY"
 
@@ -134,8 +134,8 @@ end
 
     @return `{ Types.Entity }?`
 ]]
-function module:with(typeName: string): { Types.Entity }?
-    return entitiesByTypeName[typeName]
+function module:with(typeName: string): { Types.Entity }
+    return entitiesByTypeName[typeName] or {}
 end
 
 function module:tag(instances: {Instance}, tag: string)
@@ -154,6 +154,9 @@ function module:tagged(tag: string?)
     return collection:GetTagged(tag or ENTITY_TAG)
 end
 
+module.relate = JECS.pair
+
+module.ChildOf = JECS.ChildOf
 
 return module
 

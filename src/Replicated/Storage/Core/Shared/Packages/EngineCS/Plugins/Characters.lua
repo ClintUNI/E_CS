@@ -44,14 +44,16 @@ Systems:on_update(System, function(world: Types.World)
 
     if Settings.Game.IsServer then return end
 
-    for playerEntity: Types.Entity, character: Model in world:query(CharacterComponent):without(WaitComponent):iter() do
-        print(character)
-        character:PivotTo(teleportLocation)
+    -- for playerEntity: Types.Entity, character: Model in world:query(CharacterComponent):without(WaitComponent):iter() do
+    --     print("WAHHH")
 
-        Entities:give(playerEntity, {
-            [WaitComponent] = 3
-        })
-    end
+    --     Wait.entity(playerEntity, "Wahh", 10)
+    -- end
+
+    -- for playerEntity: Types.Entity, character: Model in world:query(CharacterComponent):without(WaitComponent):iter() do
+    --     print(character)
+    --     character:PivotTo(teleportLocation)
+    -- end
 end)
 
 return System

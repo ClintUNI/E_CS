@@ -1,4 +1,3 @@
---!strict
 --so, when we use priority numbers to change when a system runs, this is used to place them in the array. It will only be checked on the initial Engine run.
 
 local engine = { __loaded = false }
