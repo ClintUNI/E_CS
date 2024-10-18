@@ -36,8 +36,14 @@ function module.check(waitEntity: Types.Entity)
     return ECS.pair(WaitsComponent, waitEntity)
 end
 
-return setmetatable(module, {
-    __call = function(self, waitEntity)
+function module.timer(waitEntity: Types.Entity): () -> (Types.Entity)
+    return function(): Types.Entity
         return ECS.pair(WaitsComponent, waitEntity)
+    end
+end
+
+return setmetatable(module, {
+    __call = function(self) 
+        return Entities.new("Wait")
     end
 })
