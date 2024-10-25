@@ -1,4 +1,3 @@
---!strict
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -7,48 +6,70 @@ local Entities =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entiti
 local Outlets = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Outlets)
 local Settings = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Settings)
 local Systems =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Systems)
+local ECS = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ECS)
 local Hooks = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hooks)
 local Input = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Input)
 local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus)
 local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ModelTracking)
+local Waits = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Waits)
 
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
 local System = Systems.new("Heartbeat", script.Name, 3)
 
 local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
-local CharacterComponent: Types.ComponentWithType<Model> = Components.new("Character")
-local WaitComponent:Types.ComponentWithType<number> = Components.new("Wait")
+local Characters: Types.ComponentWithType<Model> = Components.new("Characters")
+
+local CharacterFor: Types.Tag = Entities.tag("CharacterFor")
+local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
+
+Entities:give(CharacterFor, { [ECS.pair(ECS.OnDeleteTarget, ECS.Remove)] = Entities.NULL })
 
 --Custom version of model tracking soecifically for this API, I could make an abstraction tbh with a model, its creation, and removing, signals and boom-
 
 local teleportLocation = CFrame.new(20, 80, -20)
 
+local Wait10Seconds = Waits(10)
+
 --[[ Update ]]
 
 Systems:on_update(System, function(world: Types.World)
-    for playerEntity: Types.Entity, player: Player in world:query(PlayerComponent):without(CharacterComponent):iter() do
-        print("hia char")
+    for playerEntity: Types.Entity in world:query(CharacterCreation):iter() do
+        local player = world:get(playerEntity, PlayerComponent)
+        if player and player.Character then
+            print("hia char")
 
-        if player.Character then
-            Entities:give(playerEntity, {[CharacterComponent] = player.Character})
+            local characterEntity = Entities.new("Character")
+
+            Entities:give(characterEntity, { 
+                [Characters] = player.Character,
+                [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
+            })
+
+            Entities:rid(playerEntity, CharacterCreation)
         end
     end
 
-    for playerEntity: Types.Entity, player: Player, character: Model in world:query(PlayerComponent, CharacterComponent):iter() do
-        if character ~= player.Character then
-            print('not same :O')
-            Entities:give(playerEntity, {[CharacterComponent] = player.Character})
-        end
-    end
-
-    if Settings.Game.IsServer then return end
-
-    -- for playerEntity: Types.Entity, character: Model in world:query(CharacterComponent):without(WaitComponent):iter() do
-    --     print("WAHHH")
-
-    --     Wait.entity(playerEntity, "Wahh", 10)
+    -- for character in world:query(Characters, ECS.pair(CharacterOf, ECS._W)):iter() do
+    --     print(character, world:target(character, CharacterOf))
     -- end
+
+    -- for playerEntity: Types.Entity, player: Player, character: Model in world:query(PlayerComponent, CharacterComponent):iter() do
+    --     if character ~= player.Character then
+    --         print('not same :O')
+    --         local characterEntity = world:target(playerEntity, ECS.pair(CharacterComponent, ECS.Wildcard))
+    --         if char
+    --         Entities:give(playerEntity, {[ECS.pair(CharacterComponent, )] = player.Character})
+    --     end
+    -- end
+
+    -- if Settings.Game.IsServer then return end
+
+    for characterEntity: Types.Entity, character: Model in world:query(Characters):without(Waits.pair(Wait10Seconds)):iter() do
+        print("WAHHH")
+        print(characterEntity)
+        Waits:give(characterEntity, Wait10Seconds)
+    end
 
     -- for playerEntity: Types.Entity, character: Model in world:query(CharacterComponent):without(WaitComponent):iter() do
     --     print(character)

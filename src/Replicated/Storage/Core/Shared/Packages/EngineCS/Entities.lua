@@ -19,10 +19,12 @@ local EntityChangesQueue = MessageBus.new("EntityChanges")
 
 local entitiesByTypeName: { [string]: { Types.Entity } }  = {}
 
+local entityTagsByName: { [string]: Types.Entity } = {}
+
 local module = {}
-module.NULL = "N*I"
+module.NULL = 81_487_763
 --[[
-    @param tag accepts a string denoting the type, for example "Player"
+    @param typeName : `string` accepts a string denoting the type, for example "Player"
 
     @return `Types.Entity`
 ]]
@@ -42,6 +44,18 @@ function module.new(typeName: string): Types.Entity
     return entity
 end
 
+function module.tag(name: string)
+
+    if entityTagsByName[name] then 
+        return entityTagsByName[name]
+    else 
+        local e = Worlds.World:entity()
+        entityTagsByName[name] = e
+
+        return e
+    end
+end
+
 local function give(world: Types.World, entity: Types.Entity, component: Types.Component, value: any?)
     if value then
         world:set(entity, component, value)
@@ -50,6 +64,11 @@ local function give(world: Types.World, entity: Types.Entity, component: Types.C
     end
 end
 
+--[[
+    @param `entity` : `Types.Entity`
+    @param `components` : `{ [Types.Component]: any }`
+    @param `duration` : `number?`
+]]
 function module:give(entity: Types.Entity, components: { [Types.Component]: any }, duration: number?)
     local world: Types.World = Worlds.World
 
@@ -138,25 +157,21 @@ function module:with(typeName: string): { Types.Entity }
     return entitiesByTypeName[typeName] or {}
 end
 
-function module:tag(instances: {Instance}, tag: string)
+function module:cTag(instances: {Instance}, tag: string)
     for index: number, instance in instances do
         collection:AddTag(instance, tag)
     end
 end
 
-function module:untag(instances: {Instance}, tag: string)
+function module:cUntag(instances: {Instance}, tag: string)
     for index: number, instance: Instance in instances do
         collection:RemoveTag(instance, tag)
     end
 end
 
-function module:tagged(tag: string?)
+function module:cTagged(tag: string?)
     return collection:GetTagged(tag or ENTITY_TAG)
 end
-
-module.relate = JECS.pair
-
-module.ChildOf = JECS.ChildOf
 
 return module
 

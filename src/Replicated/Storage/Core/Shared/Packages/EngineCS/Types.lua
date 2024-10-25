@@ -10,6 +10,8 @@ export type ComponentWithType<T> = JECS.Entity<T>
 
 export type Entity = JECS.Entity
 
+export type Tag = JECS.Entity
+
 export type Tuple<A, B> = typeof(table.unpack({} :: { [number]: A | B }))
 
 export type Yields<T> = T & { _yielding_type_notation_do_not_use: nil }

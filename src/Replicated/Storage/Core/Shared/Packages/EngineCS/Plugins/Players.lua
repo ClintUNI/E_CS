@@ -13,7 +13,9 @@ local System = Systems.new("Heartbeat", script.Name, 2)
 
 local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
 local NetworkComponent: Types.ComponentWithType<boolean> = Components.new("Network")
-local WaitComponent:Types.ComponentWithType<number> = Components.new("Wait")
+local WaitsComponent:Types.ComponentWithType<number> = Components.new("Waits")
+
+local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
 
 --[[ Setup ]]
 
@@ -26,10 +28,11 @@ do
         local playerEntity: Types.Entity = Entities.new("Player")
         Entities:give(playerEntity, {
             [PlayerComponent] = player,
-            [NetworkComponent] = (Settings.Game.IsServer and Settings.Plugins.Network)
+            [NetworkComponent] = (Settings.Game.IsServer and Settings.Plugins.Network),
+            [CharacterCreation] = Entities.NULL
         })
 
-        Entities:tag({player}, "LivingEntity")
+        Entities:cTag({player}, "LivingEntity")
 
         entityIDsByPlayer[player] = playerEntity
     end

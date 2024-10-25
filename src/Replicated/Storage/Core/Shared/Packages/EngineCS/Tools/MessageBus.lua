@@ -1,10 +1,12 @@
 local bus = {}
 
-local busData = {}
+local busData: { [ Queue<any | number> ]: any } = {}
 
 local busNamesAndTheirIndex = {}
 
-function bus.new(name: string)
+export type Queue<T = nil> = T
+
+function bus.new<value>(name: string): Queue<value | number>
     if busNamesAndTheirIndex[name] then
         return busNamesAndTheirIndex[name]
     else
@@ -15,27 +17,31 @@ function bus.new(name: string)
     end
 end
 
-function bus.queue(bus: number, queueTableOrDictionary): ()
-    if assert(busData[bus] ~= nil, "Cannot queue to a message bus that does not exist.") then
-        table.insert(busData[bus], queueTableOrDictionary)
+function bus.type<QueueValue>(): number & QueueValue
+    return 1 :: number & QueueValue
+end
+
+function bus.queue<T, E>(queue: Queue<T>, queueEntry: E): ()
+    if assert(busData[queue] ~= nil, "Cannot queue to a message bus that does not exist.") then
+        table.insert(busData[queue], queueEntry)
     end
 end
 
-function bus.read(bus: number): { [number]: {[any]: any} }
-    return busData[bus]
+function bus.read<T>(queue: T): { [number]: any }
+    return busData[queue]
 end
 
-function bus.consume(bus: number, startIndex: number?, endIndex: number?): ()
-    if assert(busData[bus], "Cannot consume a message bus that does not exist.") then
+function bus.consume<T>(queue: T, startIndex: number?, endIndex: number?): ()
+    if assert(busData[queue], "Cannot consume a message bus that does not exist.") then
         if not startIndex then
-            table.clear(busData[bus])
+            table.clear(busData[queue])
         elseif not endIndex then
-            for i = #busData[bus], startIndex, -1 do
-                table.remove(busData[bus], i)
+            for i = #busData[queue], startIndex, -1 do
+                table.remove(busData[queue], i)
             end
         else
             for i = endIndex, startIndex, -1 do
-                table.remove(busData[bus], i)
+                table.remove(busData[queue], i)
             end
         end
     end
