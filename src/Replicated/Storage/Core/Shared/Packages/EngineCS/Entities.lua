@@ -112,12 +112,13 @@ function module:insert<ComponentType>(entity: Types.Entity, componentWithTableVa
 end
 
 function module:rid(entity: Types.Entity, ...: Types.Component)
+    local world = Worlds.World
     local componentsAsNull = {}
     for _, component: Types.Component in { ... } do
-        Worlds.World:remove(entity, component)
+        world:remove(entity, component)
         componentsAsNull[component] = module.NULL
 
-        if module:has(entity, SyncComponent) then
+        if world:has(entity, SyncComponent) then
             MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = "DELETE" })
         end
     end

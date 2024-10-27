@@ -34,7 +34,7 @@ local settings = {
     },
 
     Plugins = {
-        Wait = true,
+        DeltaTime = true,
         Players = true,
         Characters = true,
         Sync = false,

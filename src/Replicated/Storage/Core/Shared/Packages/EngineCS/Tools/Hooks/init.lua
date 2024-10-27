@@ -1,4 +1,6 @@
 --!strict
+local debugMode = _G.E_DEBUG
+
 local data = setmetatable({
     Listeners = {},
     SetCommands = {}
@@ -18,6 +20,9 @@ local listenersObject = setmetatable({
         if data.Listeners[key] then
             index = table.insert(data.Listeners[key], callback)
         else
+            if debugMode then
+                warn("Creating hook", key)
+            end
             data.Listeners[key] = { callback }
         end
 

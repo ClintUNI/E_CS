@@ -12,6 +12,8 @@ local System = Systems.new("Heartbeat", script.Name, 1)
 local hook = Entities.new("Hook")
 local hookObject = Hooks
 
+local debugMode = _G.E_DEBUG
+
 local listenerComponentsMap = {}
 
 Systems:on_update(System, function(world: Types.World): ()
@@ -29,6 +31,10 @@ Systems:on_update(System, function(world: Types.World): ()
 
             for _, callback: (any, any) -> () in comp do
                 callback(last or nil, command.NewValue)
+            end
+            
+            if debugMode then
+                warn("Running hook", command.Key, "new value", command.NewValue, "old value", last or nil)
             end
         end
 

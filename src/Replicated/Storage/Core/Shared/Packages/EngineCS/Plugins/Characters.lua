@@ -1,6 +1,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Classes = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Classes)
+local __EXAMPLE__ = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Classes.__EXAMPLE__)
 local Components = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Components)
 local Entities =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entities)
 local Outlets = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Outlets)
@@ -11,7 +13,6 @@ local Hooks = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hook
 local Input = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Input)
 local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus)
 local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ModelTracking)
-local Waits = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Waits)
 
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
@@ -23,13 +24,13 @@ local Characters: Types.ComponentWithType<Model> = Components.new("Characters")
 local CharacterFor: Types.Tag = Entities.tag("CharacterFor")
 local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
 
+local debugMode = _G.E_DEBUG
+
 Entities:give(CharacterFor, { [ECS.pair(ECS.OnDeleteTarget, ECS.Remove)] = Entities.NULL })
 
 --Custom version of model tracking soecifically for this API, I could make an abstraction tbh with a model, its creation, and removing, signals and boom-
 
 local teleportLocation = CFrame.new(20, 80, -20)
-
-local Wait10Seconds = Waits(10)
 
 --[[ Update ]]
 
@@ -37,7 +38,11 @@ Systems:on_update(System, function(world: Types.World)
     for playerEntity: Types.Entity in world:query(CharacterCreation):iter() do
         local player = world:get(playerEntity, PlayerComponent)
         if player and player.Character then
-            print("hia char")
+            if debugMode then
+                warn("Creating character for", player)
+
+                Classes.New(__EXAMPLE__)
+            end
 
             local characterEntity = Entities.new("Character")
 
@@ -45,6 +50,8 @@ Systems:on_update(System, function(world: Types.World)
                 [Characters] = player.Character,
                 [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
             })
+
+            Entities:give(playerEntity, {[characterEntity] = Entities.NULL})
 
             Entities:rid(playerEntity, CharacterCreation)
         end
@@ -65,11 +72,6 @@ Systems:on_update(System, function(world: Types.World)
 
     -- if Settings.Game.IsServer then return end
 
-    for characterEntity: Types.Entity, character: Model in world:query(Characters):without(Waits.pair(Wait10Seconds)):iter() do
-        print("WAHHH")
-        print(characterEntity)
-        Waits:give(characterEntity, Wait10Seconds)
-    end
 
     -- for playerEntity: Types.Entity, character: Model in world:query(CharacterComponent):without(WaitComponent):iter() do
     --     print(character)
