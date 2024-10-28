@@ -1,8 +1,8 @@
+--!strict
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Classes = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Classes)
-local __EXAMPLE__ = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Classes.__EXAMPLE__)
 local Components = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Components)
 local Entities =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entities)
 local Outlets = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Outlets)
@@ -12,14 +12,21 @@ local ECS = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ECS)
 local Hooks = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hooks)
 local Input = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Input)
 local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus)
-local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ModelTracking)
+local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Objects)
 
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
+
+local new = Classes.New
+local with = Classes.With
+local entity = Classes.Entity
+local property = Classes.PropertyGet
+local declareProps = Classes.Props
+local CharacterClass = require(script.CharacterClass)
 
 local System = Systems.new("Heartbeat", script.Name, 3)
 
 local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
-local Characters: Types.ComponentWithType<Model> = Components.new("Characters")
+local Characters: Types.ComponentWithType<Model> = Components.new("Character")
 
 local CharacterFor: Types.Tag = Entities.tag("CharacterFor")
 local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
@@ -40,16 +47,13 @@ Systems:on_update(System, function(world: Types.World)
         if player and player.Character then
             if debugMode then
                 warn("Creating character for", player)
-
-                Classes.New(__EXAMPLE__)
             end
 
-            local characterEntity = Entities.new("Character")
-
-            Entities:give(characterEntity, { 
-                [Characters] = player.Character,
+            declareProps(CharacterClass, {
+                Name = player.Character.Name,
                 [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
             })
+            local characterEntity = new(CharacterClass);
 
             Entities:give(playerEntity, {[characterEntity] = Entities.NULL})
 

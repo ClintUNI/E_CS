@@ -14,7 +14,7 @@ local Systems =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Systems
 local Hooks = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hooks)
 local Input = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Input)
 local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus)
-local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ModelTracking)
+local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Objects)
 
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 

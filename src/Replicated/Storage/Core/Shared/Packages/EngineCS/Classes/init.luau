@@ -6,6 +6,8 @@ local Entities = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entitie
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 local Worlds = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Worlds)
 
+local debugMode = _G.E_DEBUG
+
 --This is meant to be used by those who enjoy stronger OOP but running in ECS.
 
 local classes = {}
@@ -15,14 +17,18 @@ type ClassId = number
 type Class = { [string]: any }
 
 type ClassScript<B = any> = {
-    [number]: { ["Entity"]: Types.Component | Types.ComponentWithType<B> | Types.Tag, Name: string, ["Value"]: B | number | any?, FF: boolean? }
+    [number]: { ["Entity"]: Types.Component | Types.ComponentWithType<B> | Types.Tag, Name: string, ["Value"]: B | any?, FF: boolean? }
 }
+
+type ClassSuper = (Types.Entity, { ClassId }) -> ()
+
+type ClassConstructor = <T, D, P>(classId: number, class: T, inheritance: D?) -> (Types.Entity)
 
 local currentClass: ClassId = 0
 
-local create = function(constructor: <T, D>(classId: number, class: T, inheritance: D) -> (Types.Entity), class: ClassScript): ClassId
+local create = function(constructor: ClassConstructor, class): ClassId
     currentClass = #classes + 1
-    table.insert(classes, { __constructor = constructor :: <T, D>(classId: number, class: T, Inheritance: D) -> (Types.Entity), __inherits = {}, __name = nil})
+    table.insert(classes, { __constructor = constructor :: ClassConstructor, __inherits = {}, __name = nil})
     
     __ClassList:SaveClass(currentClass, class)
 
@@ -50,32 +56,25 @@ local parse = function(class: Class): ClassScript
     return classCommands
 end
 
+local cachedProps = {}
+
+local popProps = function(classId: ClassId)
+    cachedProps[tostring(classId)] = nil
+end
+
+type props = ((ClassId) -> ({[string]: any})) | ((ClassId, {[string]: any}) -> ())
+local props: props = function(classId: ClassId, propList: {[string]: any}?)
+    if propList then
+        cachedProps[tostring(classId)] = propList
+        return
+    end
+    return cachedProps[tostring(classId)]
+end
+
 local inherits = function(entity, classScripts: { ClassScript })
     for _, v: ClassScript in classScripts do
         Entities:give(entity, parse(v))
     end
-end
-
---[[
-    Inherits classes *BEFORE* or *AFTER* the creation of the entity and its lowest most hierarchy class. \
-    This functionality can be controlled through to class' constructor.
-]]
-local new = function(class: ClassId): Types.Entity
-    assert(classes[class] ~= nil, "Cannot create from a class that does not exist.")
-
-    local inheritanceList = {}
-
-    for _, iClass in classes[class].__inherits, -1 do
-        local classScript = __ClassList:GetClassGiveCommands(iClass)
-        inheritanceList = { table.unpack(inheritanceList), table.unpack(classScript) }
-    end
-
-    local newEntity = classes[class].__constructor(class, __ClassList:GetClassGiveCommands(class), inheritanceList)
-    Entities:give(newEntity, {[Entities.tag(classes[class].__name)] = Entities.NULL})
-
-    table.insert(__ClassList.ClassesList[class].Entities, newEntity)
-
-    return newEntity
 end
 
 local identify = function(class: ClassId): string
@@ -85,6 +84,49 @@ local identify = function(class: ClassId): string
 end
 
 local currentEntity;
+
+local function super<A, D>(inherits: { ClassId })
+    local inheritanceList: { [Types.Entity]: any } = {}
+
+    for _, iClass in inherits, -1 do
+        local classGiveCommands = __ClassList:GetClassGiveCommands(iClass)
+        for entity, value in classGiveCommands do
+            inheritanceList[currentEntity] = value
+        end
+    end
+
+    Entities:give(currentEntity, inheritanceList)
+end
+
+--[[
+    Calls the constructor for a given class and returns a newly constructed entity of that class.
+]]
+local new = function(class: ClassId): Types.Entity
+    assert(classes[class] ~= nil, "Cannot create from a class that does not exist.")
+
+    if debugMode then
+        warn("Creating entity with class", identify(class))
+    end
+
+    local newEntity = classes[class].__constructor(class, __ClassList:GetClassGiveCommands(class), classes[class].__inherits)
+    popProps(class)
+    table.insert(__ClassList.ClassesList[class].Entities, newEntity)
+
+    return newEntity
+end
+
+local with = function(newPropertyValues: { [string | Types.Entity]: any })
+    local componentValueDictionary = {}
+    for key, value in newPropertyValues do
+        if typeof(key) == "string" then
+            componentValueDictionary[Components.new(key)] = value
+        else
+            componentValueDictionary[key] = value
+        end
+    end
+
+    Entities:give(currentEntity, componentValueDictionary)
+end
 
 local is = function(class: ClassId): boolean
     return Worlds.World:has(currentEntity, Entities.tag(classes[class].__name)) and true or false
@@ -110,12 +152,30 @@ local set = function<a, b, c>(entity:Types. Entity, fieldOrPropertyName: string,
 end
 
 local from = function(classList: { ClassId })
+    local inheritancesAndTheirInheritances = {}
+    for _, classId in classList do
+        local inheritClassIds = classes[classId].__inherits
+        for _, inheritancesInheritedClassId in inheritClassIds do
+            table.insert(inheritancesAndTheirInheritances, inheritancesInheritedClassId)
+        end
+        table.insert(inheritancesAndTheirInheritances, classId)
+    end
     classes[currentClass].__inherits = classList
 end
 
-local function getClass(name: string): ClassId
+local function getClassIdAndSetName(name: string): ClassId
     classes[currentClass].__name = name
     return currentClass
+end
+
+local function getClassIdFromName(name: string): ClassId
+    for classId, class in classes do
+        if class.__name == name then
+           return classId 
+        end
+    end
+
+    error("Cannot get a class that doesn't exist for class: " .. name)
 end
 
 return {
@@ -125,8 +185,20 @@ return {
     Parse = parse,
     From = from,
     Inherits = inherits,
-    Class = getClass,
+    As = getClassIdAndSetName,
+    Class = getClassIdFromName,
     Entity = entity,
     Is = is,
-    Identify = identify
+    Identify = identify,
+    Super = super,
+    With = with,
+    Props = props,
+
+    
+    PropertyGet = Components.new,
+
+    FieldGet = Entities.tag,
+
+    FlagGet = Entities.tag,
+
 }

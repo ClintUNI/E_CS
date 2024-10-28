@@ -43,7 +43,6 @@ function engine.boot(...: {
     local _ = require(script.Components)
     local _ = require(script.Systems)
 
-
     return function(engineStartParameters: EngineStartParameters)
         local scheduler = require(script.Private.SchedulerV3)
 

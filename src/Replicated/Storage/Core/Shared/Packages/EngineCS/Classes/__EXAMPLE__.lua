@@ -1,50 +1,63 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Entities = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entities)
-local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
-local Classes = require(script.Parent)
+local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
 
+local Entities = require(E_CS.Entities)
+local Types = require(E_CS.Types)
 
-local Field = require(script.Parent.Field)
-local Flag = require(script.Parent.Flag)
-local Property = require(script.Parent.Property)
+local ClassesFolder = E_CS.Classes
+local Classes = require(ClassesFolder)
+local Field = require(ClassesFolder.Field)
+local Property = require(ClassesFolder.Property)
+local Flag = require(ClassesFolder.Flag)
+local Type = require(script.Parent.Type)
 
 local create = Classes.Create
 local parse = Classes.Parse
 local from = Classes.From
-local class = Classes.Class
+local as = Classes.As
 local identify = Classes.Identify
+local super = Classes.Super
+local props = Classes.Props
+local scope = Classes.Entity
+local with = Classes.With
 
-local debugMode = _G.E_DEBUG
+local PropertyGet = Classes.PropertyGet
+
+
 
 local foreignClassId = 2
 
 type testClass = { Name: string, RaceId: number, Location: CFrame, Alive: true, FFTesting: true }
 
 create(
-    function(classId: number, class: testClass, inheritances: { [Types.Component | Types.Entity]: any }): Types.Entity
+    function(classId: number, class: testClass, inheritances: { number }): Types.Entity
         local entity: Types.Entity = Entities.new(identify(classId))
-        Entities:give(entity, inheritances) --Allows for interface and default values to be overwritten.
+        scope(entity)
+
+        super(inheritances) --Allows for interface and default values to be overwritten by running this first.
         Entities:give(entity, class)
 
-        if debugMode then
-            warn("Creating entity with class", identify(classId))
-        end
-
+        with(props(classId) :: testClass) --Props are values given before the constructor is called.
+                                        -- They will be 'popped' after the constructor task.
         return entity
     end,
     {
         Property("Name", "Test"), --Component with default data.
         Property("RaceId", 1), 
-        Property("Location", Vector3.zero), --Component that doesn't have default data but will
-                                    -- be given a value soon after creation.
-        Field("Alive"), --Tag
+        Property("Location"), --Component that doesn't have default data but will
+                                    -- be given a value soon in the constructor.
+        Field("Alive"), -- Tag
 
-        Flag("Testing"), -- FFTesting
+        Flag("Testing"), -- FFTesting Tag
+
+        Type("Test"), -- IsATest Tag
     }
 )
 
---[[```lua from(foreignClassId, ...)```]]
+--[[```lua 
+from(foreignClassId, ...)
+```]]
 
-return class("TestClass")
+return as("TestClass")

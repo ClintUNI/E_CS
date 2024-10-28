@@ -9,7 +9,7 @@ local ModelTrackingQueue: number = MessageBus.new("ModelTracking")
 
 local module = {}
 
-function module:subscribe(entity: Types.Entity, model: Instance?, modelCreationEvent: RBXScriptSignal?, modelCleaningEvent: RBXScriptSignal?): ()
+function module:track(entity: Types.Entity, model: Instance?, modelCreationEvent: RBXScriptSignal?, modelCleaningEvent: RBXScriptSignal?): ()
     MessageBus.queue(ModelTrackingQueue, { Model = model, Entity = entity, CreationEvent = modelCreationEvent, CleaningEvent = modelCleaningEvent})
 end
 

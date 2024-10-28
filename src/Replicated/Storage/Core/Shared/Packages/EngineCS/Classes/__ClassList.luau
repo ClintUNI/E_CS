@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Components = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Components)
 local Entities = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entities)
 
 local function newClass(id)
@@ -80,7 +81,7 @@ local classes; classes = {
 
         return class.Id
     end,
-
+    
     GetClassGiveCommands = function(self, class)
         return self.ClassGiveCommands[class]
     end

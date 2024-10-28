@@ -26,7 +26,7 @@ local Settings = require(E_CS.Settings)
 
 local Hooks = require(E_CS.Tools.Hooks)
 local MessageBus = require(E_CS.Tools.MessageBus)
-local ModelTracking = require(E_CS.Tools.ModelTracking)
+local ModelTracking = require(E_CS.Tools.Objects)
 local UniqueKey = require(E_CS.Tools.UniqueKey)
 local Input = require(E_CS.Tools.Input)
 

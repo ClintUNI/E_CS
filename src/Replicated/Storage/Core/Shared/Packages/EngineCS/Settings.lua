@@ -40,9 +40,7 @@ local settings = {
         Sync = false,
         Network = false,
         Hooks = true,
-        Models = true,
-        Humanoids = true,
-        Health = true,
+        Objects = true,
 
         Changes = false
     },
