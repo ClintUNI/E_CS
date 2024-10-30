@@ -24,6 +24,11 @@ local entityTagsByName: { [string]: Types.Entity } = {}
 local module = {}
 module.NULL = 81_487_763
 --[[
+    Helper Function \
+    Provides better tracking for created entities by supporting entity types.
+
+    Creates a new world entity and returns it.
+
     @param typeName : `string` accepts a string denoting the type, for example "Player"
 
     @return `Types.Entity`
@@ -37,9 +42,9 @@ function module.new(typeName: string): Types.Entity
         entitiesByTypeName[typeName] = { entity } 
     end
 
-    if Settings.Plugins.Changes == true  then --normally true, but this should be networked instead
-        MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = "CREATE" })
-    end
+    -- if Settings.Plugins.Changes == true  then --normally true, but this should be networked instead
+    --     MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = "CREATE" })
+    -- end
 
     return entity
 end
@@ -56,6 +61,10 @@ function module.tag(name: string)
     end
 end
 
+--[[
+    We don't use this function inside of our Entities:give() method in order to cut out on overhead. \
+    However, this is still used in other methods.
+]]
 local function give(world: Types.World, entity: Types.Entity, component: Types.Component, value: any?)
     if value then
         world:set(entity, component, value)
@@ -65,6 +74,15 @@ local function give(world: Types.World, entity: Types.Entity, component: Types.C
 end
 
 --[[
+    Helper Function
+    Interface for world's `set` and `add`
+
+    Give the provided entity its components using the Key: `Component`, Value: `Data` *or* `Entites.NULL`.
+
+    **Notes**
+    - More effecient @ >= 500 key value pairs.
+    - The cheaper, single component, operation would be to use `world:set()` *or* `world:add()`
+
     @param `entity` : `Types.Entity`
     @param `components` : `{ [Types.Component]: any }`
     @param `duration` : `number?`
@@ -72,14 +90,12 @@ end
 function module:give(entity: Types.Entity, components: { [Types.Component]: any }, duration: number?)
     local world: Types.World = Worlds.World
 
-    local shouldQueueMessage: boolean = (world:get(entity, SyncComponent) or false)
-
     for component: Types.Component, value: any in components do
-        give(world, entity, component, if value == module.NULL then nil else value)
-    end
-
-    if shouldQueueMessage then
-        MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = components })
+        if value == module.NULL then
+            world:add(entity, component)
+        else
+            world:set(entity, component, value)
+        end
     end
 
     if duration then
@@ -90,8 +106,17 @@ function module:give(entity: Types.Entity, components: { [Types.Component]: any 
             end
         end)
     end
+
+    local shouldQueueMessage: boolean = (world:get(entity, SyncComponent) or false)
+    if shouldQueueMessage then
+        MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = components })
+    end
 end
 
+--[[
+    Helper Function \
+    Expensive operation, inserts data into entity components whom are of type `table` or `dictionary`.
+]]
 function module:insert<ComponentType>(entity: Types.Entity, componentWithTableValue: Types.ComponentWithType<ComponentType>, values: { [number | string]: any })
     local world: Types.World = Worlds.World
 
@@ -111,19 +136,23 @@ function module:insert<ComponentType>(entity: Types.Entity, componentWithTableVa
     end
 end
 
+--[[
+    Helper Function \
+    Removes entities, components, tags, or relationships from the first arguement's entity.
+]]
 function module:rid(entity: Types.Entity, ...: Types.Component)
     local world = Worlds.World
-    local componentsAsNull = {}
+    -- local componentsAsNull = {}
     for _, component: Types.Component in { ... } do
         world:remove(entity, component)
-        componentsAsNull[component] = module.NULL
+        -- componentsAsNull[component] = module.NULL
 
-        if world:has(entity, SyncComponent) then
-            MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = "DELETE" })
-        end
+        -- if world:has(entity, SyncComponent) then
+        --     MessageBus.queue(EntityChangesQueue, { Entity = entity, Components = "DELETE" })
+        -- end
     end
 
-    module:insert(entity, ChangesComponent, componentsAsNull)
+    -- module:insert(entity, ChangesComponent, componentsAsNull)
 end
 
 function module:has(entity: Types.Entity, component: Types.Component, ...: Types.Component): boolean

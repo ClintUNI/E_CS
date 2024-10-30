@@ -22,10 +22,11 @@ local super = Classes.Super
 local scope = Classes.Entity
 local props = Classes.Props
 local with = Classes.With
-local private = Classes.Secure
 
 export type CharacterClass = { 
-    Name: string
+    Name: string,
+    Character: Model,
+    CharacterFor_Pair: Types.Entity
 }
 
 create(
@@ -34,19 +35,13 @@ create(
         scope(entity)
         super(inheritances)
         Entities:give(entity, class)
-
-        
-        with(props(classId) :: CharacterClass)
+            with(props(classId) :: CharacterClass)
 
         return entity
     end,
     {
-        --sync(Property("Example")) --Networked from server to client, not client to server.
         Property("Name"),
         Property("Character"),
-
-        private(Property("ServerLocation")), --Server Side Only, but shared class.
-        Property("ClientLocation"),
 
         Type("Character")
     }

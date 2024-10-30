@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Settings = require(script.Parent.Settings)
 local __ClassList = require(script.__ClassList)
 local Components = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Components)
 local Entities = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entities)
@@ -163,6 +164,16 @@ local from = function(classList: { ClassId })
     classes[currentClass].__inherits = classList
 end
 
+local isServer = Settings.Game.IsServer
+
+local secure = function<a>(any: a): a?
+    if isServer then
+        return any
+    else
+        return nil
+    end
+end
+
 local function getClassIdAndSetName(name: string): ClassId
     classes[currentClass].__name = name
     return currentClass
@@ -193,6 +204,7 @@ return {
     Super = super,
     With = with,
     Props = props,
+    Secure = secure,
 
     
     PropertyGet = Components.new,
