@@ -9,12 +9,16 @@ local Outlets = require(E_CS.Outlets)
 local Types = require(E_CS.Types)
 local Settings = require(E_CS.Settings)
 
+local Classes = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Classes)
+
+local new = Classes.New
+local with = Classes.With
+local entity = Classes.Entity
+local property = Classes.PropertyGet
+local declareProps = Classes.Props
+local PlayerClass = require(script.PlayerClass)
+
 local System = Systems.new("Heartbeat", script.Name, 2)
-
-local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
-local NetworkComponent: Types.ComponentWithType<boolean> = Components.new("Network")
-
-local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
 
 local debugMode = _G.E_DEBUG
 
@@ -30,12 +34,10 @@ do
             warn("Creating player for", player)
         end
 
-        local playerEntity: Types.Entity = Entities.new("Player")
-        Entities:give(playerEntity, {
-            [PlayerComponent] = player,
-            [NetworkComponent] = (Settings.Game.IsServer and Settings.Plugins.Network),
-            [CharacterCreation] = Entities.NULL
+        declareProps(PlayerClass, {
+            Player = player,
         })
+        local playerEntity = new(PlayerClass);
 
         Entities:cTag({player}, "LivingEntity")
 

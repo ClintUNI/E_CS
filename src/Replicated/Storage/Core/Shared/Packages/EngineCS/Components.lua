@@ -9,6 +9,14 @@ local componentEntitiesByName: {[string | PluginComponents]: Types.Component} = 
 
 local module = {}
 
+--[[
+    Creates, or locates, a named component entity and returns it. \
+    When created, the component will be stored in a hashmap.
+
+    @param name : `string`
+
+    @return Component
+]]
 function module.new<T>(name: string): Types.ComponentWithType<T>
     local world: Types.World = Worlds.World
 
@@ -22,14 +30,15 @@ function module.new<T>(name: string): Types.ComponentWithType<T>
     end
 end
 
+--[[
+    Get a component with the given name.
+
+    @param name : `string`
+
+    @return Component
+]]
 function module.get<T>(name: string): Types.ComponentWithType<T>
     return componentEntitiesByName[name]
-end
-
-function module:for_each<T>(...: Types.ComponentWithType<T>): typeof(Worlds.World:query(... :: Types.ComponentWithType<T>):iter())
-    local world: Types.World = Worlds.World
-
-    return world:query(...):iter()
 end
 
 return module

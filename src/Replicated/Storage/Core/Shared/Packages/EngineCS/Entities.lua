@@ -2,17 +2,15 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local collection = game:GetService("CollectionService")
 
+local ECS = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ECS)
 local Types = require(script.Parent.Types)
 local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus) :: Types.MessageBus
-local JECS = require(ReplicatedStorage.Core.Shared.Packages.JECS)
 local Components = require(script.Parent.Components)
-local Settings = require(script.Parent.Settings)
 
 local Worlds = require(script.Parent.Worlds)
 
 local ENTITY_TAG = "__ENTITY"
 
-local ChangesComponent: Types.ComponentWithType<{any}> = Components.new("Changes")
 local SyncComponent = Components.new("Sync")
 
 local EntityChangesQueue = MessageBus.new("EntityChanges")
@@ -22,7 +20,7 @@ local entitiesByTypeName: { [string]: { Types.Entity } }  = {}
 local entityTagsByName: { [string]: Types.Entity } = {}
 
 local module = {}
-module.NULL = 81_487_763
+module.NULL = "_123"
 --[[
     Helper Function \
     Provides better tracking for created entities by supporting entity types.
@@ -49,12 +47,21 @@ function module.new(typeName: string): Types.Entity
     return entity
 end
 
-function module.tag(name: string)
+--[[
+    Creates a new tag entity with the specified name and, or if it already exists, returns it.
+
+    @param 
+
+    @return Tag An entity which has no data.
+]]
+function module.tag(name: string): Types.Tag
 
     if entityTagsByName[name] then 
         return entityTagsByName[name]
     else 
-        local e = Worlds.World:entity()
+        local world = Worlds.World
+        local e = world:entity()
+        world:set(e, ECS.Name, name)
         entityTagsByName[name] = e
 
         return e
@@ -187,18 +194,28 @@ function module:with(typeName: string): { Types.Entity }
     return entitiesByTypeName[typeName] or {}
 end
 
+--[[
+    Collection Service
+]]
 function module:cTag(instances: {Instance}, tag: string)
     for index: number, instance in instances do
         collection:AddTag(instance, tag)
     end
 end
 
+--[[
+    Collection Service
+]]
 function module:cUntag(instances: {Instance}, tag: string)
     for index: number, instance: Instance in instances do
         collection:RemoveTag(instance, tag)
     end
 end
 
+--[[
+    Collection Service \
+    Get Wrapper
+]]
 function module:cTagged(tag: string?)
     return collection:GetTagged(tag or ENTITY_TAG)
 end
