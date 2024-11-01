@@ -30,16 +30,14 @@ export type StateInterface = {
 }
 
 create(
-    function() warn("Cannot ") end,
+    function() warn("Cannot call interface contructors.") end,
     {
         --sync(Property("Example")) --Networked from server to client, not client to server.
         Property("Name"),
-        Property("Player"),
+        Property("StateId"),
 
-        Field("CharacterCreation"),
-
-        Type("Player")
+        Type("BaseState")
     }
 )
 
-return as("PlayerClass")
+return as("StateInterface")

@@ -4,8 +4,16 @@ local uk = {}
 
 local uniqueKeys = {}
 
-function uk.create()
-    local key = HttpService:GenerateGUID()
+--[[
+    Creates and stores a unique key before returning it.
+
+    There were reports of standard GenerateGUID() sometimes returning repeats, \ 
+    hence this wrapper.
+
+    @return string
+]]
+function uk.create(): string
+    local key: string = HttpService:GenerateGUID()
 
     if not table.find(uniqueKeys, key) then
         table.insert(uniqueKeys, key)

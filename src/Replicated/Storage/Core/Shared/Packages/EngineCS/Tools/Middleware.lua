@@ -1,10 +1,15 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
-local MessageBus = require(script.Parent.MessageBus) :: Types.MessageBus
-local UniqueKey = require(script.Parent.UniqueKey)
+local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
 
+local Types = require(E_CS.Types)
+local Alert = require(E_CS.Alert)
+
+local MessageBus = require(E_CS.Tools.MessageBus) :: Types.MessageBus
+local UniqueKey = require(E_CS.Tools.UniqueKey)
+
+Alert.Unstable("[Middleware]")
 
 local middleware = {}
 

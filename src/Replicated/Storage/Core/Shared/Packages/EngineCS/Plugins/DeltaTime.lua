@@ -10,7 +10,7 @@ local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 local system = Systems.new("Heartbeat", script.Name, 1)
 
 local DeltaTime: Types.ComponentWithType<number> = Components.new("DeltaTime")
-local Game = Entities.tag("Game")
+local Game = Entities.new("Game")
 
 local oS: typeof(os) = os
 
