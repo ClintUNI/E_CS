@@ -1,50 +1,66 @@
 --!strict
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
+local Classes = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Classes)
+local Components = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Components)
+local Entities =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Entities)
+local Outlets = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Outlets)
+local Settings = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Settings)
+local Systems =  require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Systems)
+local ECS = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ECS)
+local Hooks = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Hooks)
+local Input = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Input)
+local MessageBus = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.MessageBus)
+local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.Objects)
 
-local Entities = require(E_CS.Entities)
-local Types = require(E_CS.Types)
+local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
-local ClassesFolder = E_CS.Classes
-local Classes = require(ClassesFolder)
-local Field = require(ClassesFolder.Field)
-local Property = require(ClassesFolder.Property)
-local Flag = require(ClassesFolder.Flag)
-local Type = require(ClassesFolder.Type)
-
-local create = Classes.Create
-local parse = Classes.Parse
-local from = Classes.From
-local as = Classes.As
-local identify = Classes.Identify
-local super = Classes.Super
-local scope = Classes.Entity
-local props = Classes.Props
+local new = Classes.New
 local with = Classes.With
+local entity = Classes.Entity
+local property = Classes.PropertyGet
+local declareProps = Classes.Props
+local withProps = Classes.WithProps
+local CharacterClass = 1
 
-export type CharacterClass = { 
-    Name: string,
-    Character: Model,
-    CharacterFor_Pair: Types.Entity
-}
+local System = Systems.new("Heartbeat", script.Name, 3)
 
-create(
-    function(classId: number, class: CharacterClass, inheritances: { number }): Types.Entity
-        local entity: Types.Entity = Entities.new("Character")
-        scope(entity)
-        super(inheritances)
-        Entities:give(entity, class)
-            with(props(classId) :: CharacterClass)
+local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
+local Characters: Types.ComponentWithType<Model> = Components.new("Character")
 
-        return entity
-    end,
-    {
-        Property("Name"),
-        Property("Character"),
+local CharacterFor: Types.Tag = Entities.tag("CharacterFor")
+local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
 
-        Type("Character")
-    }
-)
+local debugMode = _G.E_DEBUG
 
-return as("CharacterClass")
+Entities:give(CharacterFor, { [ECS.pair(ECS.OnDeleteTarget, ECS.Remove)] = Entities.NULL })
+
+--Custom version of model tracking soecifically for this API, I could make an abstraction tbh with a model, its creation, and removing, signals and boom-
+
+local teleportLocation = CFrame.new(20, 80, -20)
+
+--[[ Update ]]
+
+Systems:on_update(System, function(world: Types.World)
+    for playerEntity: Types.Entity in world:query(CharacterCreation):iter() do
+        local player = world:get(playerEntity, PlayerComponent)
+        if player and player.Character then
+            if debugMode then
+                warn("Creating character for", player)
+            end
+
+            local characterEntity = new(CharacterClass);
+            withProps({
+                Name = player.Character.Name,
+                [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
+            })
+
+            Entities:give(playerEntity, {[characterEntity] = Entities.NULL})
+
+            Entities:rid(playerEntity, CharacterCreation)
+        end
+    end
+end)
+
+return System

@@ -26,6 +26,7 @@ type ClassSuper = (Types.Entity, { ClassId }) -> ()
 type ClassConstructor = <T, D, P>(classId: number, class: T, inheritance: D?) -> (Types.Entity)
 
 local currentClass: ClassId = 0
+local currentEntity;
 
 local create = function(constructor: ClassConstructor, class): ClassId
     currentClass = #classes + 1
@@ -57,14 +58,27 @@ local parse = function(class: Class): ClassScript
     return classCommands
 end
 
+local with = function(newPropertyValues: { [string | Types.Entity]: any })
+    local componentValueDictionary = {}
+    for key, value in newPropertyValues do
+        if typeof(key) == "string" then
+            componentValueDictionary[Components.new(key)] = value
+        else
+            componentValueDictionary[key] = value
+        end
+    end
+
+    Entities:give(currentEntity, componentValueDictionary)
+end
+
 local cachedProps = {}
 
 local popProps = function(classId: ClassId)
     cachedProps[tostring(classId)] = nil
 end
 
-type props = ((ClassId) -> ({[string]: any})) | ((ClassId, {[string]: any}) -> ())
-local props: props = function(classId: ClassId, propList: {[string]: any}?)
+type Props = ((ClassId) -> ({[Types.Entity | Types.Component]: any})) | ((ClassId, {[string]: any}) -> ())
+local props = function(classId: ClassId, propList: {[string]: any}?)
     if propList then
         cachedProps[tostring(classId)] = propList
         return
@@ -83,8 +97,6 @@ local identify = function(class: ClassId): string
     assert(classData ~= nil, "Cannot identify a class that does not exist.")
     return classData.__name
 end
-
-local currentEntity;
 
 local function super<A, D>(inherits: { ClassId })
     local inheritanceList: { [Types.Entity]: any } = {}
@@ -112,21 +124,9 @@ local new = function(class: ClassId): Types.Entity
     local newEntity = classes[class].__constructor(class, __ClassList:GetClassGiveCommands(class), classes[class].__inherits)
     popProps(class)
     table.insert(__ClassList.ClassesList[class].Entities, newEntity)
+    currentEntity = newEntity
 
     return newEntity
-end
-
-local with = function(newPropertyValues: { [string | Types.Entity]: any })
-    local componentValueDictionary = {}
-    for key, value in newPropertyValues do
-        if typeof(key) == "string" then
-            componentValueDictionary[Components.new(key)] = value
-        else
-            componentValueDictionary[key] = value
-        end
-    end
-
-    Entities:give(currentEntity, componentValueDictionary)
 end
 
 local is = function(class: ClassId): boolean
@@ -203,7 +203,8 @@ return {
     Identify = identify,
     Super = super,
     With = with,
-    Props = props,
+    Props = props :: Props,
+    WithProps = with :: (propList: {[string]: any}) -> (),
     Secure = secure,
 
     

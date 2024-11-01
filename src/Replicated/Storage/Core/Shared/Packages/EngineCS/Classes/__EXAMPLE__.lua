@@ -39,8 +39,10 @@ create(
         super(inheritances) --Allows for interface and default values to be overwritten by running this first.
         Entities:give(entity, class)
 
+        --do not do this if you use the withProps(), this is meant for declareProps()
         with(props(classId) :: testClass) --Props are values given before the constructor is called.
                                         -- They will be 'popped' after the constructor task.
+                                         -- == to withProps({}) in the systems scope.
         return entity
     end,
     {
