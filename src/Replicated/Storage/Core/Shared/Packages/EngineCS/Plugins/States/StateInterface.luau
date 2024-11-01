@@ -14,9 +14,6 @@ local Flag = require(ClassesFolder.Flag)
 local Type = require(ClassesFolder.Type)
 
 local create = Classes.Create
-local parse = Classes.Parse
-local from = Classes.From
-local as = Classes.As
 local identify = Classes.Identify
 local super = Classes.Super
 local scope = Classes.Entity

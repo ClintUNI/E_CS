@@ -17,10 +17,8 @@ local ModelTracking = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.To
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
 local new = Classes.New
-local with = Classes.With
-local entity = Classes.Entity
-local property = Classes.PropertyGet
-local declareProps = Classes.Props
+local get = Classes.Get
+local withProps = Classes.WithProps
 local CharacterClass = require(script.CharacterClass)
 
 local System = Systems.new("Heartbeat", script.Name, 3)
@@ -49,17 +47,23 @@ Systems:on_update(System, function(world: Types.World)
                 warn("Creating character for", player)
             end
 
-            declareProps(CharacterClass, {
+
+            local characterEntity = new(CharacterClass);
+            withProps({
                 Name = player.Character.Name,
+                Character = player.Character,
                 [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
             })
-            local characterEntity = new(CharacterClass);
 
             Entities:give(playerEntity, {[characterEntity] = Entities.NULL})
 
             Entities:rid(playerEntity, CharacterCreation)
         end
     end
+
+    -- for characterEntity: Types.Entity in world:query(get.Type("Character")):iter() do
+    --     print(characterEntity, world:get(characterEntity, Components.new("Character")))
+    -- end
 
     -- for character in world:query(Characters, ECS.pair(CharacterOf, ECS._W)):iter() do
     --     print(character, world:target(character, CharacterOf))

@@ -14,30 +14,22 @@ local Flag = require(ClassesFolder.Flag)
 local Type = require(ClassesFolder.Type)
 
 local create = Classes.Create
-local parse = Classes.Parse
-local from = Classes.From
-local as = Classes.As
-local identify = Classes.Identify
 local super = Classes.Super
 local scope = Classes.Entity
 local props = Classes.Props
 local with = Classes.With
-local private = Classes.Secure
 
 export type PlayerClass = { 
     Name: string,
     Player: Player
 }
 
-create(
+return create(
     function(classId: number, class: PlayerClass, inheritances: { number }): Types.Entity
         local entity: Types.Entity = Entities.new("Player")
         scope(entity)
         super(inheritances)
         Entities:give(entity, class)
-
-        
-        with(props(classId) :: PlayerClass)
 
         return entity
     end,
@@ -50,6 +42,4 @@ create(
 
         Type("Player")
     }
-)
-
-return as("PlayerClass")
+).as("PlayerClass").save()

@@ -12,10 +12,8 @@ local Settings = require(E_CS.Settings)
 local Classes = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Classes)
 
 local new = Classes.New
-local with = Classes.With
-local entity = Classes.Entity
-local property = Classes.PropertyGet
-local declareProps = Classes.Props
+local get = Classes.Get
+local withProps = Classes.WithProps
 local PlayerClass = require(script.PlayerClass)
 
 local System = Systems.new("Heartbeat", script.Name, 2)
@@ -34,10 +32,10 @@ do
             warn("Creating player for", player)
         end
 
-        declareProps(PlayerClass, {
+        local playerEntity = new(PlayerClass);
+        withProps({
             Player = player,
         })
-        local playerEntity = new(PlayerClass);
 
         Entities:cTag({player}, "LivingEntity")
 

@@ -19,15 +19,13 @@ local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 local new = Classes.New
 local with = Classes.With
 local entity = Classes.Entity
-local property = Classes.PropertyGet
-local declareProps = Classes.Props
+local get = Classes.Get
 local withProps = Classes.WithProps
 local CharacterClass = 1
 
 local System = Systems.new("Heartbeat", script.Name, 3)
 
 local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
-local Characters: Types.ComponentWithType<Model> = Components.new("Character")
 
 local CharacterFor: Types.Tag = Entities.tag("CharacterFor")
 local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
@@ -35,10 +33,6 @@ local CharacterCreation: Types.Tag = Entities.tag("CharacterCreation")
 local debugMode = _G.E_DEBUG
 
 Entities:give(CharacterFor, { [ECS.pair(ECS.OnDeleteTarget, ECS.Remove)] = Entities.NULL })
-
---Custom version of model tracking soecifically for this API, I could make an abstraction tbh with a model, its creation, and removing, signals and boom-
-
-local teleportLocation = CFrame.new(20, 80, -20)
 
 --[[ Update ]]
 
@@ -50,9 +44,11 @@ Systems:on_update(System, function(world: Types.World)
                 warn("Creating character for", player)
             end
 
+
             local characterEntity = new(CharacterClass);
             withProps({
                 Name = player.Character.Name,
+                Character = player.Character,
                 [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
             })
 
@@ -60,6 +56,10 @@ Systems:on_update(System, function(world: Types.World)
 
             Entities:rid(playerEntity, CharacterCreation)
         end
+    end
+
+    for characterEntity: Types.Entity in world:query(get.Type("Character")):iter() do
+        print(characterEntity, world:get(characterEntity, Components.new("Character")))
     end
 end)
 

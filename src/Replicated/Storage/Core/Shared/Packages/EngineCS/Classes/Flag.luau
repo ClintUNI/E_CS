@@ -6,11 +6,8 @@ local ECS = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Tools.ECS)
 local Types = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Types)
 
 
-return function(name: string): { Entity: Types.Tag, Value: nil}
+return function(name: string): { Entity: Types.Tag, Value: "Tag"}
     local flagName = "FF" .. name
     local field = Entities.tag(flagName)
-    if not Entities:has(field, ECS.Name) then
-        Entities:give(field, {[ECS.Name] = flagName})
-    end
-    return { Entity = field, Name = name }
+    return { Entity = field, Name = name, Value = "Tag" }
 end

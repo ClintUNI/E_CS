@@ -14,16 +14,13 @@ local Flag = require(ClassesFolder.Flag)
 local Type = require(script.Parent.Type)
 
 local create = Classes.Create
-local parse = Classes.Parse
-local from = Classes.From
-local as = Classes.As
 local identify = Classes.Identify
 local super = Classes.Super
 local props = Classes.Props
 local scope = Classes.Entity
 local with = Classes.With
 
-local PropertyGet = Classes.PropertyGet
+local PropertyGet = Classes.Get.Property
 
 
 
@@ -31,7 +28,7 @@ local foreignClassId = 2
 
 type testClass = { Name: string, RaceId: number, Location: CFrame, Alive: true, FFTesting: true }
 
-create(
+return create(
     function(classId: number, class: testClass, inheritances: { number }): Types.Entity
         local entity: Types.Entity = Entities.new(identify(classId))
         scope(entity)
@@ -54,12 +51,6 @@ create(
 
         Flag("Testing"), -- FFTesting Tag
 
-        Type("Test"), -- IsATest Tag
+        Type("Test"), -- TEST Tag
     }
-)
-
---[[```lua 
-from(foreignClassId, ...)
-```]]
-
-return as("TestClass")
+).as("TestClass").save()
