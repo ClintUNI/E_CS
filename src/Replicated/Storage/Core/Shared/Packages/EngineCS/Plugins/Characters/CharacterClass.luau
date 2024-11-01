@@ -32,8 +32,6 @@ return create(
         super(inheritances)
         Entities:give(entity, class)
 
-        print(entity)
-
         return entity
     end,
     {
