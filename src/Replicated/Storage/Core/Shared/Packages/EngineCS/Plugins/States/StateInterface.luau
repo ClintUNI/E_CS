@@ -19,15 +19,14 @@ local super = Classes.Super
 local scope = Classes.Entity
 local props = Classes.Props
 local with = Classes.With
-local private = Classes.Secure
 
 export type StateInterface = { 
     Name: string,
     StateId: number,
 }
 
-create(
-    function() warn("Cannot call interface contructors.") end,
+return create(
+    function()  warn("Cannot call interface contructors."); return nil :: Types.Entity; end,
     {
         --sync(Property("Example")) --Networked from server to client, not client to server.
         Property("Name"),
@@ -35,6 +34,4 @@ create(
 
         Type("BaseState")
     }
-)
-
-return as("StateInterface")
+).as("AbstractState").save()
