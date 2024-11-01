@@ -8,17 +8,12 @@ local Types = require(E_CS.Types)
 
 local ClassesFolder = E_CS.Classes
 local Classes = require(ClassesFolder)
-local Field = require(ClassesFolder.Field)
 local Property = require(ClassesFolder.Property)
-local Flag = require(ClassesFolder.Flag)
 local Type = require(ClassesFolder.Type)
 
 local create = Classes.Create
-local identify = Classes.Identify
 local super = Classes.Super
 local scope = Classes.Entity
-local props = Classes.Props
-local with = Classes.With
 local private = require(ClassesFolder.Private)
 
 export type CharacterClass = { 
