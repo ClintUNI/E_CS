@@ -12,9 +12,9 @@ local Property = require(ClassesUtilities.Property)
 local Flag = require(ClassesUtilities.Flag)
 local Type = require(ClassesUtilities.Type)
 
-local Declare = Classes.Declaration.open()
-
 type testClass = { Name: string, RaceId: number, Location: CFrame, Alive: true, FFTesting: true }
+
+local Declare = Classes.Declaration.open()
 
 Declare.as("TestClass")
 
