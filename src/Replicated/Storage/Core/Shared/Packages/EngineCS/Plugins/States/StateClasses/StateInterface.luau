@@ -15,12 +15,12 @@ local Private = require(ClassesUtilities.Private)
 
 local Declare = Classes.Declaration.open()
 
-export type PlayerClass = { 
+export type StateInterface = { 
     Name: string,
-    Player: Player
+    StateEnumType: number,
 }
 
-Declare.as("PlayerClass")
+Declare.as("StateInterface")
 
 return Declare.create(
     function(entity: Types.Entity)
@@ -30,10 +30,8 @@ return Declare.create(
     end,
     {
         Property("Name"),
-        Property("Player"),
+        Property("StateEnumType"),
 
-        Field("CharacterCreation"),
-
-        Type("Player")
+        Type("State")
     }
 )

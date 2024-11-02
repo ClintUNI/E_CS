@@ -32,10 +32,9 @@ local System = Systems.new("Heartbeat", script.Name, 3)
 --[[ Update ]]
 
 Systems:on_update(System, function(world: Types.World)
-    for playerEntity: Types.Entity in world:query(CharacterCreation):iter() do
-        local player: Player? = world:get(playerEntity, PlayerComponent)
-        if player and player.Character then
-            DebugMode.warn("Characters | Creating character for " .. player.Name)
+    for playerEntity: Types.Entity, player: Player in world:query(PlayerComponent):with(CharacterCreation):iter() do
+        if player.Character then
+            DebugMode.warn("Characters | " .. player.Name .. " | Creating." )
 
             world:add(playerEntity, new(CharacterClass, {
                 Name = player.Character.Name,

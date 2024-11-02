@@ -25,7 +25,7 @@ do
     local function createPlayerEntity(player: Player): ()
         if entityIDsByPlayer[player] then return end
 
-        DebugMode.warn("Players | Creating player for " .. player.Name)
+        DebugMode.warn("Players | " .. player.Name .. " | Creating.")
 
         Entities:cTag({player}, "LivingEntity")
 

@@ -23,8 +23,6 @@ export type CharacterClass = {
 
 Declare.as("CharacterClass")
 
-Declare.from(--[[ Inside of here, we can optionally choose what classIds our class inherits from. ]])
-
 return Declare.create(
     function(entity: Types.Entity)
         Declare.construct(entity)
