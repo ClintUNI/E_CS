@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
 local ClassesUtilities = E_CS.Classes
 
+local Benchmark = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Benchmark)
 local Types = require(E_CS.Types)
 
 local Classes = require(ClassesUtilities)
@@ -26,6 +27,7 @@ Declare.as("CharacterClass")
 return Declare.create(
     function(entity: Types.Entity)
         Declare.construct(entity)
+
 
         return entity
     end,

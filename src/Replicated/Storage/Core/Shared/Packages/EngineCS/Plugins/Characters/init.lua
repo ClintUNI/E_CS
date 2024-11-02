@@ -9,11 +9,14 @@ local Components = require(E_CS.Components)
 local DebugMode = require(E_CS.DebugMode)
 local Entities =  require(E_CS.Entities)
 local Systems =  require(E_CS.Systems)
+local Benchmark = require(E_CS.Benchmark)
 local ECS = require(E_CS.Tools.ECS)
 local Types = require(E_CS.Types)
 
 local new = Classes.Creation
 local get = Classes.Get
+
+local benchmark = Benchmark.open()
 
 local CharacterClass = require(script.CharacterClass)
 
@@ -35,6 +38,18 @@ Systems:on_update(System, function(world: Types.World)
     for playerEntity: Types.Entity, player: Player in world:query(PlayerComponent):with(CharacterCreation):iter() do
         if player.Character then
             DebugMode.warn("Characters | " .. player.Name .. " | Creating." )
+
+            -- _G.E_DEBUG = false
+            -- benchmark.test( { Name = "CharacterClass Construction", Callback = new }, CharacterClass, {
+            --     Name = player.Character.Name,
+            --     Character = player.Character,
+            --     [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
+            -- })
+    
+            -- benchmark.results()
+            -- benchmark.close()
+
+            -- _G.E_DEBUG = true
 
             world:add(playerEntity, new(CharacterClass, {
                 Name = player.Character.Name,

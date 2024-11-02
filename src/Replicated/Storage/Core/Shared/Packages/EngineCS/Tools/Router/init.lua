@@ -1,7 +1,7 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Alert = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Alert)
+local Alerts = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Alerts)
 local Settings = require(ReplicatedStorage.Core.Shared.Packages.EngineCS.Settings)
 local module = {}
 
@@ -9,7 +9,7 @@ local remoteFunction = Instance.new("RemoteFunction")
 remoteFunction.Parent = ReplicatedStorage
 remoteFunction.Name = "__Router"
 
-Alert.Unstable("[Router]")
+Alerts.Unstable("[Router]")
 
 local domains = {}
 

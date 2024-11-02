@@ -1,15 +1,14 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
-local Alert = require(E_CS.Alert)
+local Alerts = require(E_CS.Alerts)
 local MessageBus = require(E_CS.Tools.MessageBus)
 local Entities =  require(E_CS.Entities)
 local Components = require(E_CS.Components)
 local Systems =  require(E_CS.Systems)
-local Outlets = require(E_CS.Outlets)
 local Types = require(E_CS.Types)
 
-Alert.Unstable("[Objects System]")
+Alerts.Unstable("[Objects -> System]")
 
 local system = Systems.new("Heartbeat", script.Name, 4)
 

@@ -23,7 +23,7 @@ export type StateInterface = {
 Declare.as("StateInterface")
 
 return Declare.create(
-    function(entity: Types.Entity)
+    function(entity: Types.Entity): Types.Entity
         Declare.construct(entity)
 
         return entity

@@ -5,8 +5,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local module = {}
 
 local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
-local Alert = require(E_CS.Alert)
-Alert.Unstable("[Dependencies]")
+local Alerts = require(E_CS.Alerts)
+Alerts.Unstable("[Dependencies]")
 
 local injections: { [number]: number } = {}
 

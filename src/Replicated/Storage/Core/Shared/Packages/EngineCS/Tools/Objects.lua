@@ -2,13 +2,13 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local E_CS = ReplicatedStorage.Core.Shared.Packages.EngineCS
-local Alert = require(E_CS.Alert)
+local Alerts = require(E_CS.Alerts)
 local MessageBus = require(E_CS.Tools.MessageBus)
 local Types = require(E_CS.Types)
 
 local ModelTrackingQueue: number = MessageBus.new("ModelTracking")
 
-Alert.Unstable("[Objects]")
+Alerts.Unstable("[Objects]")
 
 local module = {}
 
