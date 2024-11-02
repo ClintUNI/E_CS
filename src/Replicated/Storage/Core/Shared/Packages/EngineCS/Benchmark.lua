@@ -1,8 +1,20 @@
 local benchmark = {}
 
-local oS = os
+local oS: typeof(os) = os
 
 type TestedTimes = { [string]: {{ EndTime: number, StartTime: number }} }
+
+local roundToTenThousandths = function(amount: number): number
+    return math.floor(amount * 10000 + 0.5) / 10000
+end
+
+local timeToFrameFraction = function(amount: number): string
+    local frameDuration: number = 1 / 60
+
+    local frames: number = roundToTenThousandths(amount / frameDuration)
+
+    return frames .. "th"
+end
 
 local getNumberOfZeros = function(amount: number): number
         local amountAsString: string = tostring(amount)
@@ -94,10 +106,28 @@ function benchmark.open()
 
                 avgTime /= totalTests
 
-                print("AvgTime |", tostring(avgTime), "| ", tostring(getNumberOfZeros(avgTime)) .. " zeros.")
+                print("AvgTime |", 
+                    tostring(avgTime), 
+                    "| ", 
+                    tostring(getNumberOfZeros(avgTime)) .. " zeros.",
+                    "| ",
+                    timeToFrameFraction(avgTime) .. " of a frame @ 60FPS."
+                )
+                print("MaxTime |", 
+                    tostring(maxTime), 
+                    "| ", 
+                    tostring(getNumberOfZeros(maxTime)) .. " zeros.",
+                    "| ",
+                    timeToFrameFraction(maxTime) .. " of a frame @ 60FPS."
+                )
 
-                print("MaxTime |", tostring(maxTime), "| ", tostring(getNumberOfZeros(maxTime)) .. " zeros.")
-                print("MinTime  |", tostring(minTime), "| ", tostring(getNumberOfZeros(minTime)) .. " zeros.")
+                print("MinTime  |", 
+                    tostring(minTime), 
+                    "| ", 
+                    tostring(getNumberOfZeros(minTime)) .. " zeros.",
+                    "| ",
+                    timeToFrameFraction(minTime) .. " of a frame @ 60FPS."
+                )
 
                 print("Total tests: " .. tostring(totalTests))
 
