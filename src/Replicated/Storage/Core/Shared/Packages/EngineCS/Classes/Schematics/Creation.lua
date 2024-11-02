@@ -31,9 +31,6 @@ return function(classId: number, props: { [string | number]: any }?): Types.Enti
     end
 
     DebugMode.warn("Classes | Creation complete for " .. classData.Name)
-
-    print(newlyConstructedEntity)
-
     
     return newlyConstructedEntity
 end
