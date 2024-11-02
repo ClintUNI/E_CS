@@ -455,7 +455,7 @@ function Loop:begin(events)
 
 						if not recentErrors[errorString] then
 							task.spawn(error, errorString)
-							warn("Matter: The above error will be suppressed for the next 10 seconds")
+							warn("E_CS: The above error will be suppressed for the next 10 seconds")
 							recentErrors[errorString] = true
 						end
 

@@ -2,7 +2,7 @@
 return {
 
     Unstable = function(keyword: string)
-        warn(keyword .. " is an unstable feature! | ! Warning !")
+        warn("\n", "Warning | " .. keyword .. " is an unstable feature and may not work or even break!")
     end
 
 }

@@ -1,19 +1,12 @@
 local Components = require(script.Parent.Components)
 local Entities = require(script.Parent.Entities)
-local SchematicMethods = require(script.SchematicMethods)
+local Types = require(script.Parent.Types)
+local Creation = require(script.Schematics.Creation)
+local Declaration = require(script.Schematics.Declaration)
 
 return {
-    Create = SchematicMethods.create,
-    New = SchematicMethods.new,
-    Set = SchematicMethods.set,
-    Class = SchematicMethods.getClassIdFromName,
-    Entity = SchematicMethods.entity,
-    Is = SchematicMethods.is,
-    Identify = SchematicMethods.identify,
-    Super = SchematicMethods.super,
-    With = SchematicMethods.with,
-    Props = SchematicMethods.props :: SchematicMethods.Props,
-    WithProps = SchematicMethods.with :: (propList: {[string]: any}) -> (),
+    Declaration = Declaration,
+    Creation = Creation,
 
     Get = {
         Property = Components.get,
@@ -22,7 +15,9 @@ return {
 
         Flag = Entities.tag,
 
-        Type = SchematicMethods.classType,
+        Type = function(name: string): Types.Entity
+        return Entities.tag(name:upper())
+    end
     },
 
 }

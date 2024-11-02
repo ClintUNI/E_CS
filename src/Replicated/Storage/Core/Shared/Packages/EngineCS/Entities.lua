@@ -20,7 +20,7 @@ local entitiesByTypeName: { [string]: { Types.Entity } }  = {}
 local entityTagsByName: { [string]: Types.Entity } = {}
 
 local module = {}
-module.NULL = "_123"
+module.NULL = "_NULL"
 --[[
     Helper Function \
     Provides better tracking for created entities by supporting entity types.

@@ -15,7 +15,9 @@ local Types = require(E_CS.Types)
 local new = Classes.Creation
 local get = Classes.Get
 
-local CharacterClass = require(script.CharacterClass)
+local CharacterClass = 1
+
+local System = Systems.new("Heartbeat", script.Name, 3)
 
 local PlayerComponent: Types.ComponentWithType<Player> = Components.new("Player")
 
@@ -26,25 +28,28 @@ local CharacterClasses: Types.Tag = get.Type("Character")
 
 Entities:give(CharacterFor, { [ECS.pair(ECS.OnDeleteTarget, ECS.Remove)] = Entities.NULL })
 
-
-local System = Systems.new("Heartbeat", script.Name, 3)
-
 --[[ Update ]]
 
 Systems:on_update(System, function(world: Types.World)
     for playerEntity: Types.Entity in world:query(CharacterCreation):iter() do
-        local player: Player? = world:get(playerEntity, PlayerComponent)
+        local player = world:get(playerEntity, PlayerComponent)
         if player and player.Character then
-            DebugMode.warn("Characters | Creating character for " .. player.Name)
+            DebugMode.warn("Creating character for", player)
 
-            world:add(playerEntity, new(CharacterClass, {
-                Name = player.Character.Name,
-                Character = player.Character,
-                [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
-            }))
+            Entities:give(playerEntity, {
+                [new(CharacterClass, {
+                    Name = player.Character.Name,
+                    Character = player.Character,
+                    [ECS.pair(CharacterFor, playerEntity)] = Entities.NULL,
+                })] = Entities.NULL
+            })
 
             Entities:rid(playerEntity, CharacterCreation)
         end
+    end
+
+    for characterEntity: Types.Entity in world:query(CharacterClasses):iter() do
+        print(characterEntity, world:get(characterEntity, Components.new("Character")))
     end
 end)
 
