@@ -10,27 +10,33 @@ local Storage = require(E_CS.Classes.Schematics.Storage)
 local __Types = require(E_CS.Classes.Schematics.__Types)
 
 return function(classId: number, props: { [string | number]: any }?): Types.Entity
-    assert(Storage:has(classId), "Classes | Cannot create from a class that does not exist.")
+    assert(Storage:has(classId), "Classes | Cannot create from a class that does not exist. ClassId: " .. classId)
     local classData: __Types.Class = Storage:get(Storage.Class, classId)
 
-    DebugMode.warn("Classes | Creating entity with class " .. classData.Name)
+    DebugMode.warn("Classes | " .. classData.Name .. " | Creating new entity.")
     local newEntity: Types.Entity = Entities.new(classData.Name)
 
-    DebugMode.warnIf(classData.InheritClassSchematicsFromIds[1] == nil, "Classes | Inheriting nothing for " .. classData.Name)
+    DebugMode.warnIf(
+        classData.InheritClassSchematicsFromIds[1] == nil, 
+        "Classes | " .. classData.Name .. " | Inheriting nothing."
+    )
     for _, inheritanceClassId in classData.InheritClassSchematicsFromIds do
         local inheritanceClassData: __Types.Class = Storage:get(Storage.Class, inheritanceClassId)
         inheritanceClassData.Constructor(newEntity)
     end
 
-    DebugMode.warn("Classes | Calling " .. classData.Name .. "'s class constructor")
+    DebugMode.warn("Classes | " .. classData.Name .. " | Calling class' constructor.")
     local newlyConstructedEntity: Types.Entity = classData.Constructor(newEntity)
 
     if props then
-        DebugMode.warn("Classes | Giving props for " .. classData.Name)
         Helpers.parseAndGiveProps(newlyConstructedEntity, props)
+
+        DebugMode.warn("Classes | " .. classData.Name .. " | Giving props to new entity.")
+    else
+        DebugMode.warn("Classes | " .. classData.Name .. " | No props were given to the new entity.")
     end
 
-    DebugMode.warn("Classes | Creation complete for " .. classData.Name)
+    DebugMode.warn("Classes | " .. classData.Name .. " | Finished.")
     
     return newlyConstructedEntity
 end
